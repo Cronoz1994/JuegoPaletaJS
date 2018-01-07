@@ -1,62 +1,102 @@
 
-var canvas      = document.getElementById('canvas');
-var contexto    = canvas.getContext('2d');
-var xPelota     = canvas.width / 2;
-var yPelota     = canvas.height - 30;
-var colorPelota = "#0095DD";
-var radioPelota = 10;
-var dxPelota    = 2;
-var dyPelota    = -1.5;
+var canvas       = document.getElementById("canvas");
+var context      = canvas.getContext("2d");
 
-setInterval(dibujar, 10);
+var ballX        = canvas.width / 2;
+var ballY        = canvas.height - 30;
+var ballColor    = "#0095DD";
+var ballRadius   = 6;
+var ballDx       = 2;
+var ballDy       = -1.5;
 
-function dibujar() {
-  contexto.clearRect(0, 0, canvas.width, canvas.height);
+var paddleHeight = 12;
+var paddleWidth  = 75;
+var paddleX      = (canvas.width - paddleWidth) / 2;
+var rightPressed = false;
+var leftPressed  = false;
 
-  dibujarPelota();
+setInterval(draw, 10);
+document.addEventListener("keyup"  , keyUpHandler  , false);
+document.addEventListener("keydown", keyDownHandler, false);
+
+function draw() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawBall();
+  drawPaddle();
 }
 
-function dibujarPelota() {
-  contexto.beginPath();
-  contexto.arc(xPelota, yPelota, radioPelota, 0, Math.PI*2);
-  contexto.fillStyle = colorPelota;
-  contexto.fill();
-  contexto.closePath();
+function drawBall() {
+  context.beginPath();
+  context.arc(ballX, ballY, ballRadius, 0, Math.PI*2);
+  context.fillStyle = ballColor;
+  context.fill();
+  context.closePath();
 
-  if (xPelota + dxPelota > canvas.width - radioPelota ||
-      xPelota + dxPelota < radioPelota) {
-    cambiarColorPelota();
-    dxPelota = -dxPelota;
+  if (ballX + ballDx > canvas.width - ballRadius ||
+      ballX + ballDx < ballRadius) {
+    setBallColor();
+    ballDx = -ballDx;
   }
 
-  if (yPelota + dyPelota > canvas.height - radioPelota  ||
-      yPelota + dyPelota < radioPelota) {
-    cambiarColorPelota();
-    dyPelota = -dyPelota;
+  if (ballY + ballDy > canvas.height - ballRadius  ||
+      ballY + ballDy < ballRadius) {
+    setBallColor();
+    ballDy = -ballDy;
   }
 
 
-  xPelota += dxPelota;
-  yPelota += dyPelota;
+  ballX += ballDx;
+  ballY += ballDy;
 }
 
-function cambiarColorPelota() {
-  colorPelota = obtenerColorAleatorio();
+function setBallColor() {
+  ballColor = getRandomColor();
 }
 
-function obtenerColorAleatorio() {
-  var valoresHexa    = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
-  var colorAleatorio = '#';
-  var indiceAlatorio = 0;
+function getRandomColor() {
+  var hexaValues  = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
+  var randomColor = "#";
+  var randomIndex = 0;
 
   for (var i = 0; i < 6; i++) {
-    indiceAlatorio = obtenerNumAleatorio(0, valoresHexa.length);
-    colorAleatorio += valoresHexa[indiceAlatorio];
+    randomIndex = getRandomNumb(0, hexaValues.length);
+    randomColor += hexaValues[randomIndex];
   }
-  
-  return colorAleatorio;
+
+  return randomColor;
 }
 
-function obtenerNumAleatorio(NumMin, NumMax) {
-  return Math.round(Math.random() * (NumMax - NumMin) + NumMin);
+function getRandomNumb(minNum, maxNum) {
+  return Math.round(Math.random() * (maxNum - minNum) + minNum);
+}
+
+function drawPaddle() {
+  context.beginPath();
+  context.rect(paddleX, canvas.height - paddleHeight - 5, paddleWidth, paddleHeight);
+  context.fillStyle = "#0095DD";
+  context.fill();
+  context.closePath();
+
+  if(rightPressed && paddleX < canvas.width - paddleWidth) {
+      paddleX += 5;
+  } else if(leftPressed && paddleX > 0) {
+      paddleX -= 5;
+  }
+}
+
+function keyDownHandler(e) {
+  if (e.keyCode == 39) {
+      rightPressed = true;
+  } else if(e.keyCode == 37) {
+      leftPressed = true;
+  }
+}
+
+function keyUpHandler(e) {
+  if(e.keyCode == 39) {
+      rightPressed = false;
+  } else if(e.keyCode == 37) {
+      leftPressed = false;
+  }
 }
