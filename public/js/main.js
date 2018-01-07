@@ -39,10 +39,12 @@ function drawBall() {
     ballDx = -ballDx;
   }
 
-  if (ballY + ballDy > canvas.height - ballRadius  ||
-      ballY + ballDy < ballRadius) {
-    setBallColor();
-    ballDy = -ballDy;
+  if (ballY + ballDy < ballRadius) {
+      setBallColor();
+      ballDy = -ballDy;
+  } else if (ballY + ballDy > canvas.height - ballRadius) {
+      alert("GAME OVER");
+      document.location.reload();
   }
 
 
