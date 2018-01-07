@@ -2,18 +2,19 @@
 var canvas       = document.getElementById("canvas");
 var context      = canvas.getContext("2d");
 
-var ballX        = canvas.width / 2;
-var ballY        = canvas.height - 30;
-var ballColor    = "#0095DD";
-var ballRadius   = 6;
-var ballDx       = 2;
-var ballDy       = -1.5;
-
 var paddleHeight = 12;
 var paddleWidth  = 75;
 var paddleX      = (canvas.width - paddleWidth) / 2;
+var paddleY      = canvas.height - paddleHeight - 5;
 var rightPressed = false;
 var leftPressed  = false;
+
+var ballColor    = "#0095DD";
+var ballRadius   = 6;
+var ballX        = paddleX + (paddleWidth / 2);
+var ballY        = paddleY - ballRadius;
+var ballDx       = 2;
+var ballDy       = -1.5;
 
 setInterval(draw, 10);
 document.addEventListener("keyup"  , keyUpHandler  , false);
@@ -33,6 +34,18 @@ function drawBall() {
   context.fill();
   context.closePath();
 
+  checkBallCollisions();
+
+  ballX += ballDx;
+  ballY += ballDy;
+}
+
+function checkBallCollisions() {
+  checkBorderCollisions();
+  checkPaddleCollisions();
+}
+
+function checkBorderCollisions() {
   if (ballX + ballDx > canvas.width - ballRadius ||
       ballX + ballDx < ballRadius) {
     setBallColor();
@@ -46,10 +59,13 @@ function drawBall() {
       alert("GAME OVER");
       document.location.reload();
   }
+}
 
-
-  ballX += ballDx;
-  ballY += ballDy;
+function checkPaddleCollisions() {
+  if((ballX > paddleX && ballX < paddleX + paddleWidth) &&
+     ballY + ballRadius > paddleY) {
+    ballDy = -ballDy;
+  }
 }
 
 function setBallColor() {
@@ -75,7 +91,7 @@ function getRandomNumb(minNum, maxNum) {
 
 function drawPaddle() {
   context.beginPath();
-  context.rect(paddleX, canvas.height - paddleHeight - 5, paddleWidth, paddleHeight);
+  context.rect(paddleX, paddleY, paddleWidth, paddleHeight);
   context.fillStyle = "#0095DD";
   context.fill();
   context.closePath();
