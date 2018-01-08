@@ -2,6 +2,7 @@
 var canvas       = document.getElementById("canvas");
 var context      = canvas.getContext("2d");
 
+var paddleColor  = "#0095DD";
 var paddleHeight = 12;
 var paddleWidth  = 75;
 var paddleX      = (canvas.width - paddleWidth) / 2;
@@ -16,7 +17,18 @@ var ballY        = paddleY - ballRadius;
 var ballDx       = 2;
 var ballDy       = -1.5;
 
+var bricks           = [];
+var brickColor       = "orange";
+var brickRowCount    = 3;
+var brickColumnCount = 5;
+var brickWidth       = 75;
+var brickHeight      = 20;
+var brickPadding     = 10;
+var brickOffsetTop   = 30;
+var brickOffsetLeft  = 30;
+
 setInterval(draw, 10);
+initBricksValues();
 document.addEventListener("keyup"  , keyUpHandler  , false);
 document.addEventListener("keydown", keyDownHandler, false);
 
@@ -25,6 +37,7 @@ function draw() {
 
   drawBall();
   drawPaddle();
+  drawBricks();
 }
 
 function drawBall() {
@@ -92,7 +105,7 @@ function getRandomNumb(minNum, maxNum) {
 function drawPaddle() {
   context.beginPath();
   context.rect(paddleX, paddleY, paddleWidth, paddleHeight);
-  context.fillStyle = "#0095DD";
+  context.fillStyle = paddleColor;
   context.fill();
   context.closePath();
 
@@ -116,5 +129,33 @@ function keyUpHandler(e) {
       rightPressed = false;
   } else if(e.keyCode == 37) {
       leftPressed = false;
+  }
+}
+
+function initBricksValues() {
+  for(col = 0; col < brickColumnCount; col++) {
+    bricks[col] = [];
+
+    for(row = 0; row < brickRowCount; row++) {
+      bricks[col][row] = { x: 0, y: 0 };
+    }
+  }
+}
+
+function drawBricks() {
+  for (var col = 0; col < brickColumnCount; col++) {
+    for (var row = 0; row < brickRowCount; row++) {
+      var brickX = (col * (brickWidth  + brickPadding)) + brickOffsetLeft;
+      var brickY = (row * (brickHeight + brickPadding)) + brickOffsetTop;
+
+      bricks[col][row].x = brickX;
+      bricks[col][row].y = brickY;
+
+      context.beginPath();
+      context.rect(brickX, brickY, brickWidth, brickHeight);
+      context.fillStyle = brickColor;
+      context.fill();
+      context.closePath();
+    }
   }
 }
